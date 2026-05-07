@@ -1,10 +1,15 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import path from "path";
 
 export default defineConfig({
-  plugins: [react(), tsconfigPaths()],
+  plugins: [
+    TanStackRouterVite(), // This handles your TanStack routes correctly
+    react(),
+    tsconfigPaths(),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -13,10 +18,5 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
-    rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, "index.html"),
-      },
-    },
   },
 });
