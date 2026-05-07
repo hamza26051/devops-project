@@ -65,11 +65,8 @@ COPY config.py           ./
 # ── Model artifacts ───────────────────────────────────────────────
 # In production these should be pulled from an artifact store
 # (S3, GCS, DVC) at container startup, not baked into the image.
-# They are included here for local development convenience.
-# Override by mounting a volume: -v /host/models:/app/models
-COPY toxicity_model_v3.pkl ./
-COPY models/               ./models/
-COPY sentiment_model/     ./sentiment_model/
+# These are currently excluded from the Git repo and should be 
+# dynamically loaded or mounted in production.
 
 # ── Runtime configuration ─────────────────────────────────────────
 ENV PYTHONUNBUFFERED=1 \

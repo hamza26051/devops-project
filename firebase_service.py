@@ -14,6 +14,21 @@ def init_firebase():
     if _db is not None:
         return _db
 
+    # Try loading from JSON string (convenient for cloud ENV vars)
+    json_str = os.environ.get("FIREBASE_SERVICE_ACCOUNT_JSON")
+    if json_str:
+        try:
+            import json
+            cred_dict = json.loads(json_str)
+            cred = credentials.Certificate(cred_dict)
+            firebase_admin.initialize_app(cred)
+            _db = firestore.client()
+            print("Firebase initialized successfully from JSON string")
+            return _db
+        except Exception as e:
+            print(f"ERROR initializing Firebase from JSON string: {e}")
+            # Fall back to file path if JSON string failed
+
     cred_path = os.environ.get("FIREBASE_SERVICE_ACCOUNT", "devops-82448-firebase-adminsdk-fbsvc-750566db39.json")
 
     if not os.path.exists(cred_path):
@@ -27,10 +42,10 @@ def init_firebase():
         cred = credentials.Certificate(cred_path)
         firebase_admin.initialize_app(cred)
         _db = firestore.client()
-        print("Firebase initialized successfully")
+        print("Firebase initialized successfully from file")
         return _db
     except Exception as e:
-        print(f"ERROR initializing Firebase: {e}")
+        print(f"ERROR initializing Firebase from file: {e}")
         return None
 
 def get_db():
