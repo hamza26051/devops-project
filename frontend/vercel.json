@@ -3,7 +3,7 @@
   "framework": "vite",
   "rootDirectory": "frontend",
   "buildCommand": "npm run vercel-build",
-  "outputDirectory": "dist/client",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/(.*)",
