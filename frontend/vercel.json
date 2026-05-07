@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "framework": "vite",
+  "framework": null,
   "rootDirectory": "frontend",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
     {
       "source": "/(.*)",
