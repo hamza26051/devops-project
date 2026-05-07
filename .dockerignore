@@ -1,0 +1,72 @@
+# ══════════════════════════════════════════════════════════════════
+# .dockerignore — VeriDrive
+# ══════════════════════════════════════════════════════════════════
+# RULE: if it is not needed to RUN the inference server, exclude it.
+# This protects against:
+#   (a) credentials leaking into the image layer history
+#   (b) large training files inflating image size unnecessarily
+#   (c) development artifacts contaminating the reproducible build
+# ══════════════════════════════════════════════════════════════════
+
+# ── Credentials (CRITICAL — must never enter the image) ───────────
+*.json
+!package.json
+# Exclude any service-account key regardless of naming convention
+*firebase*adminsdk*.json
+*service_account*.json
+*serviceAccount*.json
+.env
+.env.*
+secrets/
+
+# ── Training data (large; not needed at inference time) ───────────
+labeled_data.csv
+human_overrides_staging.csv
+training.1600000.processed.noemoticon.csv
+*.csv
+
+# ── Training scripts (not needed at inference time) ───────────────
+model1.py
+train_sentiment.py
+ct_loop.py
+drift_monitor.py
+
+# ── MLflow artifacts ──────────────────────────────────────────────
+mlruns/
+mlflow.db
+mlartifacts/
+
+# ── Test suite (not needed in production runtime image) ───────────
+test_regression.py
+conftest.py
+model_gate.py
+pytest.ini
+.pytest_cache/
+
+# ── Python cache / bytecode ───────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# ── Virtual environments ──────────────────────────────────────────
+venv/
+.venv/
+env/
+.env/
+
+# ── Git ───────────────────────────────────────────────────────────
+.git/
+.gitignore
+
+# ── IDE / OS artifacts ────────────────────────────────────────────
+.idea/
+.vscode/
+*.DS_Store
+Thumbs.db
+
+# ── CI artifacts ──────────────────────────────────────────────────
+.github/
+*.xml
+htmlcov/
+.coverage
