@@ -1,23 +1,28 @@
-// @lovable.dev/vite-tanstack-config already includes the following — do NOT add them manually
-// or the app will break with duplicate plugins:
-// - tanstackStart, viteReact, tailwindcss, tsConfigPaths, cloudflare (build-only),
-// - componentTagger (dev-only), VITE_* env injection, @ path alias, React/TanStack dedupe,
-// - error logger plugins, and sandbox detection (port/host/strictPort).
-// You can pass additional config via defineConfig({ vite: { ... }}) if needed.
-
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 
 export default defineConfig({
-  // Enable Nitro server engine for SSR
+  // Configure TanStack Start for static export
   start: {
-    ssr: true,
-  },
-  // Configure Nitro for Vercel deployment
-  nitro: {
-    preset: "vercel",
-    // Ensure server output goes to .vercel/output
-    output: {
-      dir: ".vercel/output",
+    ssr: false, // Disable SSR
+    output: "static", // Output static files only
+    // Optional: Pre-render key routes for better SEO/performance
+    prerender: {
+      routes: [
+        "/",
+        "/login",
+        "/signup", 
+        "/dashboard",
+        "/analyze",
+        "/result",
+        "/admin",
+        "/manual"
+      ],
     },
+  },
+  // Ensure client assets go to dist/client
+  build: {
+    outDir: "dist/client",
+    emptyOutDir: true,
   },
 });
