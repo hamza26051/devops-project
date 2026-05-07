@@ -1,18 +1,17 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
-import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 
 export default defineConfig({
-  // Configure TanStack Start for static export
+  // Force static output for Vercel compatibility
   start: {
-    ssr: false, // Disable SSR
-    output: "static", // Output static files only
-    // Optional: Pre-render key routes for better SEO/performance
+    ssr: false,
+    output: "static",
+    // Pre-render your key routes for SEO/performance
     prerender: {
       routes: [
         "/",
         "/login",
-        "/signup", 
-        "/dashboard",
+        "/signup",
+        "/dashboard", 
         "/analyze",
         "/result",
         "/admin",
