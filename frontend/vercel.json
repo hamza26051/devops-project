@@ -2,7 +2,7 @@
   "version": 2,
   "framework": "vite",
   "rootDirectory": "frontend",
-  "buildCommand": "npm run vercel-build",
+  "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
     {
