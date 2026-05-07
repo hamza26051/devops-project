@@ -1,13 +1,22 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
-import { defineConfig as defineLovableConfig } from "@lovable.dev/vite-tanstack-config";
+import path from "path";
 
-export default process.env.VITE_STATIC_BUILD 
-  ? defineConfig({
-      plugins: [react(), tsconfigPaths()],
-      build: {
-        outDir: "dist",
-      }
-    })
-  : defineLovableConfig();
+export default defineConfig({
+  plugins: [react(), tsconfigPaths()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  build: {
+    outDir: "dist",
+    emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, "index.html"),
+      },
+    },
+  },
+});
