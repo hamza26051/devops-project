@@ -3,7 +3,7 @@
   "framework": null,
   "rootDirectory": "frontend",
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/client",
+  "outputDirectory": ".output/public",
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
