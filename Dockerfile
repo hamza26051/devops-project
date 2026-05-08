@@ -64,13 +64,12 @@ RUN groupadd --gid 1001 appgroup \
  && chown -R appuser:appgroup /app
 
 # ── Health check ──────────────────────────────────────────────────
-# Probes /health (added to main3.py). Container is marked unhealthy
-# if the endpoint does not respond within 10 s.
-# --start-period gives uvicorn 20 s to load the sklearn models.
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+# Increase start-period to 300s (5 mins) to allow for model download
+HEALTHCHECK --interval=30s --timeout=10s --start-period=300s --retries=3 \
     CMD python -c \
-        "import urllib.request, sys; \
-         r = urllib.request.urlopen('http://localhost:8000/health', timeout=8); \
+        "import urllib.request, os, sys; \
+         port = os.environ.get('PORT', '8000'); \
+         r = urllib.request.urlopen(f'http://localhost:{port}/health', timeout=8); \
          sys.exit(0 if r.status == 200 else 1)"
 
 # Drop to non-root before the process starts
@@ -78,5 +77,5 @@ USER appuser
 
 EXPOSE 8000
 
-# Use Uvicorn with multiple workers for production scaling
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+# Use the dynamic PORT variable provided by the environment
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 4"]
