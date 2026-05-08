@@ -42,11 +42,12 @@ RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 # ──────────────────────────────────────────────────────────────────
 FROM python:3.11-slim AS runtime
 
-# ── Non-root user ─────────────────────────────────────────────────
-# Running as root inside a container is an unnecessary privilege
-# escalation risk. uid/gid 1001 is arbitrary but consistent.
-RUN groupadd --gid 1001 appgroup \
- && useradd  --uid 1001 --gid appgroup --no-create-home --shell /sbin/nologin appuser
+# ── Runtime configuration ─────────────────────────────────────────
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PORT=8000 \
+    APP_ENV=production \
+    TRANSFORMERS_CACHE=/app/cache
 
 WORKDIR /app
 
@@ -54,25 +55,13 @@ WORKDIR /app
 COPY --from=builder /install /usr/local
 
 # ── Application source (inference-only files) ─────────────────────
-# .dockerignore prevents credentials, training data, and cache from
-# ever reaching this COPY context. Belt-and-suspenders: we also
-# name each file explicitly rather than using COPY . .
-COPY main.py          ./
-COPY risk_engine.py    ./
-COPY firebase_service.py ./
-COPY config.py           ./
+COPY main.py risk_engine.py firebase_service.py config.py ./
 
-# ── Model artifacts ───────────────────────────────────────────────
-# In production these should be pulled from an artifact store
-# (S3, GCS, DVC) at container startup, not baked into the image.
-# These are currently excluded from the Git repo and should be 
-# dynamically loaded or mounted in production.
-
-# ── Runtime configuration ─────────────────────────────────────────
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PORT=8000 \
-    APP_ENV=production
+# ── Non-root user & Permissions ───────────────────────────────────
+RUN groupadd --gid 1001 appgroup \
+ && useradd  --uid 1001 --gid appgroup --create-home --shell /bin/bash appuser \
+ && mkdir -p /app/cache \
+ && chown -R appuser:appgroup /app
 
 # ── Health check ──────────────────────────────────────────────────
 # Probes /health (added to main3.py). Container is marked unhealthy
